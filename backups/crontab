@@ -1,0 +1,14 @@
+# Step 1. ssh into two or more servers
+# Step 2. crontab -e
+# Step 3. Add the following cronjobs
+# Step 4. Enjoy daily backups!
+
+
+# Main server
+# Backup the database at 4 AM every day
+0 4 * * * /usr/bin/php /home/wiki/sysadmin/backups/backup.php
+
+
+# Backup server
+# Copy the backups using rsync at 5 AM every day
+0 5 * * * /home/user/backups/rsync.sh
