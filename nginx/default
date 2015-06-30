@@ -1,0 +1,7 @@
+# For whatever reason doing https redirects on newer versions of nginx can lead to redirect loops without this
+
+server {
+    listen      80;
+    server_name "";
+    return      444;
+}
