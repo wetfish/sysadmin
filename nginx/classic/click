@@ -1,12 +1,12 @@
 server {
     listen         80;
-    server_name    wiki.wetfish.net;
+    server_name    click.wetfish.net;
     return         301 https://$server_name$request_uri;
 }
 
 server {
-    listen          443 default_server ssl;
-    server_name     wiki.wetfish.net;
+    listen          443 ssl;
+    server_name     click.wetfish.net;
 
     ssl                     on;
     ssl_certificate         /etc/nginx/cert/wiki.wetfish.net.crt;
@@ -24,7 +24,7 @@ server {
     ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK';
     ssl_prefer_server_ciphers on;
 
-    root /home/wiki/public_html;
+    root /home/click/public_html;
     index index.php index.html index.htm;
 
     location / {
@@ -32,10 +32,10 @@ server {
         try_files $uri $uri/ /index.php;
     }
 
-    # pass the PHP scripts to FastCGI server listening on /var/run/php5-fpm.sock
+    # pass the PHP scripts to FastCGI server
     location ~ \.php$ {
         try_files $uri =404;
-        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_pass unix:/var/run/php5-fpm-click.sock;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include fastcgi_params;
