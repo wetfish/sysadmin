@@ -32,6 +32,14 @@ server {
         try_files $uri $uri/ /index.php;
     }
 
+    location /api {
+	autoindex off;
+    }
+
+    location /api/v1 {
+	try_files $uri $uri/ /api/v1/index.php;
+    }
+
     # pass the PHP scripts to FastCGI server
     location ~ \.php$ {
         try_files $uri =404;
