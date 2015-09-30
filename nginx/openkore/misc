@@ -1,0 +1,18 @@
+server {
+    listen         80;
+    server_name    misc.ragnastats.com misc.openkore.com;
+
+    fastcgi_buffers 16 16k; 
+    fastcgi_buffer_size 32k;
+
+    root /home/misc/public_html;
+    index index.php index.html index.htm;
+
+    location / {
+        autoindex on;
+        try_files $uri $uri/ /index.php;
+    }
+}
+
+
+
