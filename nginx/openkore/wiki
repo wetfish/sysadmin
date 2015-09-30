@@ -1,6 +1,6 @@
 server {
     listen         80;
-    server_name    wiki.ragnastats.com;
+    server_name    wiki.ragnastats.com openkore.com *.openkore.com;
 
     fastcgi_buffers 16 16k; 
     fastcgi_buffer_size 32k;

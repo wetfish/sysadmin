@@ -1,6 +1,6 @@
 server {
     listen         80;
-    server_name    forums.ragnastats.com;
+    server_name    forums.ragnastats.com forums.openkore.com;
 
     fastcgi_buffers 16 16k; 
     fastcgi_buffer_size 32k;
