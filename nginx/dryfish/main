@@ -5,15 +5,3 @@ server {
     client_max_body_size    32M;
     root /home/dryfish/public_html;
 }
-
-server {
-    listen 80;
-    server_name f.dryfish.net;
-    root /home/frob/public_html;
-}
-
-server {
-    listen 80;
-    server_name ~^(.*)\.dryfish\.net$;
-    root /home/$1/public_html;
-}

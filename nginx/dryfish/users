@@ -1,0 +1,17 @@
+server {
+    listen 80;
+    server_name playground.dryfish.net;
+    root /home/hyrulian/public_html;
+}
+
+server {
+    listen 80;
+    server_name f.dryfish.net;
+    root /home/frob/public_html;
+}
+
+server {
+    listen 80;
+    server_name ~^(.*)\.dryfish\.net$;
+    root /home/$1/public_html;
+}
