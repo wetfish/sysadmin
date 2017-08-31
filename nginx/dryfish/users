@@ -18,6 +18,13 @@ server {
 
 server {
     listen 80;
+    server_name hexafluoride.dryfish.net;
+    root /home/hexafluoride/public_html;
+    index index.html index.txt;
+}
+
+server {
+    listen 80;
     server_name ~^(.*)\.dryfish\.net$;
     root /home/$1/public_html;
 }
