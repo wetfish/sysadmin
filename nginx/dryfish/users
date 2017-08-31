@@ -12,8 +12,8 @@ server {
 
 server {
     listen 80;
-    server_name foXxXy.dryfish.net;
-    root /home/zebzeb/public_html;
+    server_name *.sara-king.com sara-king.com;
+    root /home/sara/public_html;
 }
 
 server {
