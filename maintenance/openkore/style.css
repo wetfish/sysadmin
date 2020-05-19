@@ -1,0 +1,21 @@
+html, body {
+	height: 100%;
+	margin: 0;
+	background-color: #f6f6f6;
+	font-family: sans-serif;
+}
+
+.aligner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.item {
+	max-width: 75%;
+}
+
+.contents {
+	text-align: center;
+}
