@@ -15,3 +15,7 @@ html, body {
 .item {
 	max-width: 75%;
 }
+
+.contents {
+	text-align: center;
+}
