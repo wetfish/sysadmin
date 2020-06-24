@@ -1,27 +1,39 @@
 server {
-    listen         80;
-    server_name    wiki.ragnastats.com openkore.com *.openkore.com;
+    listen 80;
+    server_name     openkore.com www.openkore.com wiki.openkore.com;
+    return          301 https://$server_name$request_uri;
+}
 
-    fastcgi_buffers 16 16k; 
-    fastcgi_buffer_size 32k;
+server {
+    listen 443 ssl;
+    server_name openkore.com www.openkore.com wiki.openkore.com;
 
     root /home/wiki/public_html;
     index index.php index.html index.htm;
 
-    location / {
-#        autoindex on;
-        try_files $uri $uri/ /index.php;
+    location = / {
+            return 302 /wiki/Main_Page;
+            #try_files $uri $uri/ /index.php;
     }
 
-    # pass the PHP scripts to FastCGI server
+    location /wiki {
+            rewrite ^/wiki/(?<pagename>.*)$ /index.php;
+    }
+
+    location ~ /index.php/(.*)$ {
+            return 302 /wiki/$1;
+    }
+
     location ~ \.php$ {
-        try_files $uri =404;
-        fastcgi_pass unix:/var/run/php5-fpm-wiki.sock;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include fastcgi_params;
+            try_files $uri =404;
+            fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include fastcgi_params;
     }
+    ssl_certificate /etc/letsencrypt/live/openkore.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/openkore.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 }
-
-
 
