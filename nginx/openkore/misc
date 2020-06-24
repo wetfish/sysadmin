@@ -15,8 +15,8 @@ server {
     index index.php index.html index.htm;
 
     location / {
-            autoindex on;
-            try_files $uri $uri/ /index.php;
+        autoindex on;
+        try_files $uri $uri/ /index.php;
     }
     ssl_certificate /etc/letsencrypt/live/openkore.com/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/openkore.com/privkey.pem; # managed by Certbot

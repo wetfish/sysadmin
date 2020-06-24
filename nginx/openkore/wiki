@@ -12,24 +12,23 @@ server {
     index index.php index.html index.htm;
 
     location = / {
-            return 302 /wiki/Main_Page;
-            #try_files $uri $uri/ /index.php;
+        return 302 /wiki/Main_Page;
     }
 
     location /wiki {
-            rewrite ^/wiki/(?<pagename>.*)$ /index.php;
+        rewrite ^/wiki/(?<pagename>.*)$ /index.php;
     }
 
     location ~ /index.php/(.*)$ {
-            return 302 /wiki/$1;
+        return 302 /wiki/$1;
     }
 
     location ~ \.php$ {
-            try_files $uri =404;
-            fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
-            fastcgi_index index.php;
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-            include fastcgi_params;
+        try_files $uri =404;
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
     }
     ssl_certificate /etc/letsencrypt/live/openkore.com/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/openkore.com/privkey.pem; # managed by Certbot
