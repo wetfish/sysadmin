@@ -1,0 +1,85 @@
+version: '3'
+services:
+  ## Overview
+  # We won't be using volumes for the code, they'll be included in the images that we run.
+  # Basics: we forward to 9000 for php-fpm inside the nodes, and out to nginx through a bespoke numbered port
+  # No tty
+  # volumes will be shared from the php images to the nginx
+  # Database will serve all services, and a setup.sql will be added to config/ for each service should it require one
+
+  glitch:
+    image: fishnet/volunteers:latest
+    container_name: voldb-php
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    volumes:
+      - glitch:/var/www
+      - ./.env:/var/www/.env
+      - node_modules:/var/www/node_modules
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  ##SSL-enabled Nginx Service; uncomment to use
+  ##Make sure to comment out the above webserver block
+  #webserver:
+  #  image: ghcr.io/linuxserver/swag
+  #  container_name: swag
+  #  restart: unless-stopped
+  #  environment:
+  #    PUID: 1000
+  #    PGID: 1000
+  #    TZ: $TIMEZONE
+  #    URL: $SITE_URL
+  #    SUBDOMAINS: $SUBDOMAINS
+  #    ONLY_SUBDOMAINS: $ONLY_SUBDOMAINS
+  #    VALIDATION: http
+  #    EMAIL: $EMAIL # optional
+  #  ports:
+  #    - "80:80"
+  #    - "443:443"
+  #  volumes:
+  #    - ./swag/site-confs:/config/nginx/site-confs
+  #    - ./swag/fastcgi_params:/config/nginx/fastcgi_params
+  #    - glitch:/var/www/glitch
+  #    - config:/config
+  #  networks:
+  #    - app-network
+  #  depends_on:
+  #    - db
+
+  # MySQL Service
+  db:
+    image: mysql:5.7.22
+    container_name: voldb-mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+      MYSQL_DATABASE: $DB_DATABASE
+      MYSQL_USER: $DB_USERNAME
+      MYSQL_PASSWORD: $DB_PASSWORD
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+
+#Volumes
+volumes:
+    dbdata:
+      driver: local
+    config:
+      driver: local
+    glitch:
+      driver: local
