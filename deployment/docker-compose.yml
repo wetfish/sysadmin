@@ -1,29 +1,122 @@
-version: '3'
+version: '3.3'
 services:
+  
   ## Overview
-  # We won't be using volumes for the code, they'll be included in the images that we run.
-  # Basics: we forward to 9000 for php-fpm inside the nodes, and out to nginx through a bespoke numbered port
-  # No tty
-  # volumes will be shared from the php images to the nginx
-  # Database will serve all services, and a setup.sql will be added to config/ for each service should it require one
+  ## We won't be using volumes for the `code`, they'll be included in the images that we run.
+  ## No tty
+  ## Database will serve all services, and a setup.sql will be added to config/ for each service should it require one
+  ## We'll use secrets instead of the .env to assign variables
+  ## entrypoint for php services will be a script that fetches the secrets and exports them to the ENV on startup
+  ## Other resources will be fetched in config/fetch_sources.sh to be shared in the files volume
 
-  glitch:
-    image: fishnet/volunteers:latest
-    container_name: voldb-php
-    restart: unless-stopped
-    tty: true
-    working_dir: /var/www
+ 
+  # Small image that fetches the git repositories we need into a shared volume, then exits
+  files:
+    image: alpine/git
+    entrypoint: /fetch_sources.sh
     volumes:
-      - glitch:/var/www
-      - ./.env:/var/www/.env
-      - node_modules:/var/www/node_modules
+      - files:/git/sources
+      - ./config/fetch_sources.sh:/fetch_sources.sh
+
+  # Node-only services. Ports listen on 2304 internally, and are remapped for nginx
+  blog:
+    image: fishnet/blog
+    restart: unless-stopped
+    working_dir: /var/www
+    ports: 
+      - 2304:2305
+
+  # These are our php services, they run and listen on port 9000 internally, remapped on the outside so nginx can invoke the correct one. Instead of a .env file, it uses the secrets system of docker
+  click:
+    image: fishnet/click
+    restart: unless-stopped
+    entrypoint: /php_config.sh
+    working_dir: /var/www
+    ports:
+      - 9001:9000
+    volumes:
+      - click:/var/www
+      - ./config/php_config.sh:/php_config.sh
+    secrets:
+      - db_username
+      - db_password
     networks:
       - app-network
     depends_on:
       - db
 
-  ##SSL-enabled Nginx Service; uncomment to use
-  ##Make sure to comment out the above webserver block
+  danger:
+    image: fishnet/danger
+    entrypoint: /php_config.sh
+    restart: unless-stopped
+    working_dir: /var/www
+    ports:
+      - 9002:9000
+    volumes:
+      - danger:/var/www
+      - ./config/php_config.sh:/php_config.sh
+    secrets:
+      - db_username
+      - db_password
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  glitch:
+    image: fishnet/glitch
+    entrypoint: /php_config.sh
+    restart: unless-stopped
+    working_dir: /var/www
+    ports:
+      - 9003:9000
+    volumes:
+      - glitch:/var/www
+      - ./config/php_config.sh:/php_config.sh
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  online:
+    image: fishnet/online
+    entrypoint: 
+      - /php_config.sh
+      - /online_config.sh
+    restart: unless-stopped
+    working_dir: /var/www/forum
+    ports:
+      - 9004:9000
+    volumes:
+      - online:/var/www/forum
+      - ./config/php_config.sh:/php_config.sh
+      - ./config/online_config.sh:/online_config.sh
+    secrets:
+      - db_username
+      - db_password
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  wiki:
+    image: fishnet/wiki
+    entrypoint: /php_config.sh
+    restart: unless-stopped
+    working_dir: /var/www
+    ports:
+      - 9005:9000
+    volumes:
+      - wiki:/var/www
+      - ./config/php_config.sh/php_config.sh
+    secrets:
+      - db_username
+      - db_password
+    networks:
+      - app-network
+    depends_on:
+      - db
+
   #webserver:
   #  image: ghcr.io/linuxserver/swag
   #  container_name: swag
@@ -41,10 +134,14 @@ services:
   #    - "80:80"
   #    - "443:443"
   #  volumes:
-  #    - ./swag/site-confs:/config/nginx/site-confs
-  #    - ./swag/fastcgi_params:/config/nginx/fastcgi_params
+  #    - ./config/site-confs:/config/nginx/site-confs
+  #    - ./config/fastcgi_params:/config/nginx/fastcgi_params
+  #    - click:/var/www/click
+  #    - danger:/var/www/danger
   #    - glitch:/var/www/glitch
-  #    - config:/config
+  #    - files:/var/www/static
+  #    - online:/var/www/online
+  #    - wiki:/var/www/wiki
   #  networks:
   #    - app-network
   #  depends_on:
@@ -53,33 +150,43 @@ services:
   # MySQL Service
   db:
     image: mysql:5.7.22
-    container_name: voldb-mysql
     restart: unless-stopped
-    tty: true
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
-      MYSQL_DATABASE: $DB_DATABASE
-      MYSQL_USER: $DB_USERNAME
-      MYSQL_PASSWORD: $DB_PASSWORD
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
+      MYSQL_USERNAME_FILE: /run/secrets/db_username
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
     volumes:
       - dbdata:/var/lib/mysql
     networks:
       - app-network
+    secrets:
+      - db_username
+      - db_password
 
-#Docker Networks
 networks:
   app-network:
-    driver: bridge
+    external:
+      name: bridge
 
-#Volumes
+secrets:
+  db_username:
+    external: true
+  db_password:
+    external: true
+
 volumes:
     dbdata:
       driver: local
-    config:
+    click:
+      driver: local
+    danger:
       driver: local
     glitch:
+      driver: local
+    files:
+      driver: local
+    online:
+      driver: local
+    wiki:
       driver: local
