@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.6'
 services:
   
   ## Overview
@@ -21,15 +21,15 @@ services:
   # Node-only services. Ports listen on 2304 internally, and are remapped for nginx
   blog:
     image: fishnet/blog
-    restart: unless-stopped
     working_dir: /var/www
     ports: 
-      - 2304:2305
+      - target: 2304
+        published: 2305
+        mode: host
 
   # These are our php services, they run and listen on port 9000 internally, remapped on the outside so nginx can invoke the correct one. Instead of a .env file, it uses the secrets system of docker
   click:
     image: fishnet/click
-    restart: unless-stopped
     entrypoint: /php_config.sh
     working_dir: /var/www
     ports:
@@ -40,15 +40,12 @@ services:
     secrets:
       - db_username
       - db_password
-    networks:
-      - app-network
     depends_on:
       - db
 
   danger:
     image: fishnet/danger
     entrypoint: /php_config.sh
-    restart: unless-stopped
     working_dir: /var/www
     ports:
       - 9002:9000
@@ -58,23 +55,18 @@ services:
     secrets:
       - db_username
       - db_password
-    networks:
-      - app-network
     depends_on:
       - db
 
   glitch:
     image: fishnet/glitch
     entrypoint: /php_config.sh
-    restart: unless-stopped
     working_dir: /var/www
     ports:
       - 9003:9000
     volumes:
       - glitch:/var/www
       - ./config/php_config.sh:/php_config.sh
-    networks:
-      - app-network
     depends_on:
       - db
 
@@ -82,38 +74,38 @@ services:
     image: fishnet/online
     entrypoint: 
       - /php_config.sh
-      - /online_config.sh
-    restart: unless-stopped
     working_dir: /var/www/forum
     ports:
       - 9004:9000
     volumes:
       - online:/var/www/forum
       - ./config/php_config.sh:/php_config.sh
-      - ./config/online_config.sh:/online_config.sh
     secrets:
       - db_username
       - db_password
-    networks:
-      - app-network
+    environment:
+        SITE_NAME: forums
+        SITE_LANGUAGE: english
+        # TODO: We assume wetfish.net
+        SITE_URL: http://halfwit.wetfish.net/forum
+        DB_DATABASE: forums
+        MAINTENANCE_MODE: 0
+        OUTGOING_EMAIL: noreply@yourdomain.com
     depends_on:
       - db
 
   wiki:
     image: fishnet/wiki
     entrypoint: /php_config.sh
-    restart: unless-stopped
     working_dir: /var/www
     ports:
       - 9005:9000
     volumes:
       - wiki:/var/www
-      - ./config/php_config.sh/php_config.sh
+      - ./config/php_config.sh:/php_config.sh
     secrets:
       - db_username
       - db_password
-    networks:
-      - app-network
     depends_on:
       - db
 
@@ -150,24 +142,17 @@ services:
   # MySQL Service
   db:
     image: mysql:5.7.22
-    restart: unless-stopped
     ports:
       - "3306:3306"
     environment:
       MYSQL_USERNAME_FILE: /run/secrets/db_username
-      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_password
     volumes:
       - dbdata:/var/lib/mysql
-    networks:
-      - app-network
     secrets:
       - db_username
       - db_password
 
-networks:
-  app-network:
-    external:
-      name: bridge
 
 secrets:
   db_username:
