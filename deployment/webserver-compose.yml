@@ -33,9 +33,11 @@ services:
 
   # Temporary nginx config
   webserver:
-    image: nginx
+    image: nginx:alpine
     ports:
       - "80:80"
+    networks: 
+      - appnet
     volumes:
       - ./config/conf.d:/etc/nginx/conf.d
       - click:/var/www/click
@@ -44,6 +46,11 @@ services:
       - files:/var/www/static
       - online:/var/www/forum
       - wiki:/var/www/wiki
+
+networks:
+  appnet:
+    external:
+      name: appnet
 
 volumes:
     click:
