@@ -14,7 +14,7 @@ git clone https://github.com/wetfish/sysadmin
 cd sysadmin/deployment
 
 # Modify your .env file, using a strong password 
-#vi .env
+vi .env
 ```
 
 ### Deployment
