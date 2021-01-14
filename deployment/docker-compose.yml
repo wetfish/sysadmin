@@ -21,101 +21,65 @@ services:
   # Node-only services. Ports listen on 2304 internally, and are remapped for nginx
   blog:
     image: fishnet/blog
-    working_dir: /var/www
-    ports: 
-      - 2305:2304
+    working_dir: /var/www/blog
     networks:
       - appnet
 
   # These are our php services, they run and listen on port 9000 internally, remapped on the outside so nginx can invoke the correct one. Instead of a .env file, it uses the secrets system of docker
   click:
     image: fishnet/click
-    entrypoint: /php_config.sh
-    working_dir: /var/www
-    ports:
-      - 9001:9000
+    working_dir: /var/www/click
     volumes:
-      - click:/var/www
-      - ./config/php_config.sh:/php_config.sh
+      - click:/var/www/click
+      - ./config/click/php.ini:/usr/local/etc/php/conf.d/settings.ini
+    env_file:
+      - ./.env
+    environment:
+      DB_DATABASE: click
     networks:
       - appnet
-    secrets:
-      - db_username
-      - db_password
     depends_on:
       - db
 
   danger:
     image: fishnet/danger
-    entrypoint: /php_config.sh
-    working_dir: /var/www
-    ports:
-      - 9002:9000
+    working_dir: /var/www/danger
     volumes:
-      - danger:/var/www
-      - ./config/php_config.sh:/php_config.sh
+      - danger:/var/www/danger
+    env_file:
+      - ./.env
     networks:
       - appnet
-    secrets:
-      - db_username
-      - db_password
+    environment:
+      DB_DATABASE: danger
+      SITE_URL: bro.majorleague.website
     depends_on:
       - db
 
   glitch:
     image: fishnet/glitch
-    entrypoint: /php_config.sh
     working_dir: /var/www
-    ports:
-      - 9003:9000
     volumes:
       - glitch:/var/www
-      - ./config/php_config.sh:/php_config.sh
+    env_file:
+      - ./.env
     networks:
       - appnet
-    depends_on:
-      - db
-
-  online:
-    image: fishnet/online
-    entrypoint: 
-      - /php_config.sh
-    working_dir: /var/www/forum
-    ports:
-      - 9004:9000
-    volumes:
-      - online:/var/www/forum
-      - ./config/php_config.sh:/php_config.sh
-    networks:
-      - appnet
-    secrets:
-      - db_username
-      - db_password
-    environment:
-        SITE_NAME: forums
-        SITE_LANGUAGE: english
-        # TODO: We assume wetfish.net
-        SITE_URL: http://halfwit.wetfish.net/forum
-        DB_DATABASE: forums
-        MAINTENANCE_MODE: 0
-        OUTGOING_EMAIL: noreply@yourdomain.com
-    depends_on:
-      - db
 
   wiki:
     image: fishnet/wiki
-    entrypoint: /php_config.sh
     working_dir: /var/www
-    ports:
-      - 9005:9000
+    environment:
+      DB_DATABASE: wiki
+      SITE_URL: story.majorleague.website # DO NOT LET ME COMMIT THIS TO THE FINAL PR
     volumes:
       - wiki:/var/www
-      - ./config/php_config.sh:/php_config.sh
+      - ./config/wiki/config.php:/var/www/src/config.php
+      - ./config/wiki/php.ini:/usr/local/etc/php/conf.d/settings.ini
+    env_file:
+      - ./.env
     networks:
       - appnet
-    secrets:
-      - db_username
-      - db_password
     depends_on:
       - db
 
@@ -149,32 +113,45 @@ services:
   #  depends_on:
   #    - db
 
+  # Temporary nginx config
+  webserver:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    networks: 
+      - appnet
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - click:/var/www/click
+      - danger:/var/www/danger
+      - glitch:/var/www/glitch
+      - files:/var/www/static
+      - wiki:/var/www/wiki
+    depends_on:
+      - blog
+      - click
+      - danger
+      - glitch
+      - wiki
+
   # MySQL Service
   db:
-    image: mysql:5.7.22
-    ports:
-      - "3306:3306"
+    image: mariadb 
+    command: --sql-mode=""
     environment:
-      MYSQL_USERNAME_FILE: /run/secrets/db_username
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_password
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+      MYSQL_USER: $DB_USERNAME
+      MYSQL_PASSWORD: $DB_PASSWORD
+      MYSQL_DATABASE: root
     volumes:
+      - ./config/schema.sql:/docker-entrypoint-initdb.d/schema.sql
       - dbdata:/var/lib/mysql
     networks:
       - appnet
-    secrets:
-      - db_username
-      - db_password
 
 networks:
   appnet:
-    name: appnet
-    attachable: true
-
-secrets:
-  db_username:
-    external: true
-  db_password:
-    external: true
+    driver: bridge
 
 volumes:
     dbdata:
@@ -186,8 +163,6 @@ volumes:
     glitch:
       driver: local
     files:
-      driver: local
-    online:
       driver: local
     wiki:
       driver: local
