@@ -21,16 +21,16 @@ services:
   # Node-only services. Ports listen on 2304 internally, and are remapped for nginx
   blog:
     image: fishnet/blog
-    working_dir: /var/www/blog
+    working_dir: /var/www
     networks:
       - appnet
 
   # These are our php services, they run and listen on port 9000 internally, remapped on the outside so nginx can invoke the correct one. Instead of a .env file, it uses the secrets system of docker
   click:
     image: fishnet/click
-    working_dir: /var/www/click
+    working_dir: /var/www
     volumes:
-      - click:/var/www/click
+      - click:/var/www
       - ./config/click/php.ini:/usr/local/etc/php/conf.d/settings.ini
     env_file:
       - ./.env
@@ -43,9 +43,9 @@ services:
 
   danger:
     image: fishnet/danger
-    working_dir: /var/www/danger
+    working_dir: /var/www
     volumes:
-      - danger:/var/www/danger
+      - /var/www
     env_file:
       - ./.env
     networks:
