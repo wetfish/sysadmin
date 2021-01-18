@@ -83,51 +83,36 @@ services:
     depends_on:
       - db
 
-  #webserver:
-  #  image: ghcr.io/linuxserver/swag
-  #  container_name: swag
-  #  restart: unless-stopped
-  #  environment:
-  #    PUID: 1000
-  #    PGID: 1000
-  #    TZ: $TIMEZONE
-  #    URL: $SITE_URL
-  #    SUBDOMAINS: $SUBDOMAINS
-  #    ONLY_SUBDOMAINS: $ONLY_SUBDOMAINS
-  #    VALIDATION: http
-  #    EMAIL: $EMAIL # optional
-  #  ports:
-  #    - "80:80"
-  #    - "443:443"
-  #  volumes:
-  #    - ./config/site-confs:/config/nginx/site-confs
-  #    - ./config/fastcgi_params:/config/nginx/fastcgi_params
-  #    - click:/var/www/click
-  #    - danger:/var/www/danger
-  #    - glitch:/var/www/glitch
-  #    - files:/var/www/static
-  #    - online:/var/www/online
-  #    - wiki:/var/www/wiki
-  #  networks:
-  #    - app-network
-  #  depends_on:
-  #    - db
-
-  # Temporary nginx config
   webserver:
-    image: nginx:alpine
+    image: ghcr.io/linuxserver/swag
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: $TIMEZONE
+      URL: $MAIN_URL
+      SUBDOMAINS: $SUBDOMAINS
+      ONLY_SUBDOMAINS: $ONLY_SUBDOMAINS
+      VALIDATION: http
+      EMAIL: $EMAIL 
+      STAGING: $STAGING
+      EXTRA_DOMAINS: $EXTRA_DOMAINS
     ports:
       - "80:80"
-    networks: 
-      - appnet
+      - "443:443"
     volumes:
-      - ./config/nginx/conf.d:/etc/nginx/conf.d
-      - click:/var/www/click
-      - danger:/var/www/danger
-      - glitch:/var/www/glitch
-      - files:/var/www/static
-      - wiki:/var/www/wiki
+      - ./config/nginx/conf.d:/config/nginx/site-confs
+      - click:/config/www/click
+      - danger:/config/www/danger
+      - glitch:/config/www/glitch
+      - files:/config/www/static
+        #- online:/var/www/online
+      - wiki:/config/www/wiki
+    networks:
+      - appnet
     depends_on:
+      - files
       - blog
       - click
       - danger
