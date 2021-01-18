@@ -65,7 +65,29 @@ services:
       - ./.env
     networks:
       - appnet
-
+  
+  online:
+    image: fishnet/online
+    working_dir: /var/www
+    volumes:
+      - online:/var/www
+      - ./config/online/php.ini:/usr/local/etc/php/conf.d/settings.ini
+    env_file:
+      - ./.env
+    networks:
+      - appnet
+    environment:
+      DB_DATABASE: online
+      MAINTENANCE_MODE: $MAINTENANCE_MODE
+      MAINTENANCE_TITLE: $MAINTENANCE_TITLE
+      MAINTENANCE_MESSAGE: $MAINTENANCE_MESSAGE
+      SITE_NAME: forums
+      SITE_LANGUAGE: english
+      SITE_URL: https://one.majorleague.website/forum
+      OUTGOING_EMAIL: noreply@wetfish.net
+    depends_on:
+      - db
+    
   wiki:
     image: fishnet/wiki
     working_dir: /var/www
@@ -102,12 +124,12 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./config/nginx/conf.d:/config/nginx/site-confs
+      - ./config/nginx:/config/nginx/site-confs
       - click:/config/www/click
       - danger:/config/www/danger
       - glitch:/config/www/glitch
       - files:/config/www/static
-        #- online:/var/www/online
+      - online:/config/www/online
       - wiki:/config/www/wiki
     networks:
       - appnet
@@ -117,6 +139,7 @@ services:
       - click
       - danger
       - glitch
+      - online
       - wiki
 
   # MySQL Service
@@ -148,6 +171,8 @@ volumes:
     glitch:
       driver: local
     files:
+      driver: local
+    online:
       driver: local
     wiki:
       driver: local
