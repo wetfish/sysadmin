@@ -81,9 +81,9 @@ services:
       MAINTENANCE_MODE: $MAINTENANCE_MODE
       MAINTENANCE_TITLE: $MAINTENANCE_TITLE
       MAINTENANCE_MESSAGE: $MAINTENANCE_MESSAGE
-      SITE_NAME: forums
-      SITE_LANGUAGE: english
-      SITE_URL: https://one.majorleague.website/forum
+      SITE_NAME: $FORUM_NAME
+      SITE_LANGUAGE: $FORUM_LANGUAGE 
+      SITE_URL: https://one.majorleague.website
       OUTGOING_EMAIL: noreply@wetfish.net
     depends_on:
       - db
