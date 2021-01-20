@@ -25,6 +25,16 @@ services:
     networks:
       - appnet
 
+  # Memes simply builds the css and js, then exits 
+  memes:
+    image: fishnet/memes
+    command: 
+      - "gulp" 
+      - "fetch"
+    volumes:
+      - memes:/data
+
+
   # These are our php services, they run and listen on port 9000 internally, remapped on the outside so nginx can invoke the correct one. Instead of a .env file, it uses the secrets system of docker
   click:
     image: fishnet/click
@@ -129,6 +139,7 @@ services:
       - danger:/config/www/danger
       - glitch:/config/www/glitch
       - files:/config/www/static
+      - memes:/config/www/memes
       - online:/config/www/online
       - wiki:/config/www/wiki
     networks:
@@ -139,6 +150,7 @@ services:
       - click
       - danger
       - glitch
+      - memes
       - online
       - wiki
 
@@ -172,7 +184,10 @@ volumes:
       driver: local
     files:
       driver: local
+    memes:
+      driver: local
     online:
       driver: local
     wiki:
       driver: local
+
