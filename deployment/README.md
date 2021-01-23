@@ -1,6 +1,5 @@
 # Deployment Guide
 
-
 ## Setup
 
 > So easy, a halfwit could do it
@@ -51,4 +50,4 @@ exit
 
 ### Maintenance
 
-
+This living document will be updated periodically to reflect requisite maintenance
