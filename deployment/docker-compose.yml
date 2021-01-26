@@ -165,6 +165,7 @@ services:
       MYSQL_DATABASE: root
     volumes:
       - ./config/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./dumps:/dumps
       - dbdata:/var/lib/mysql
     networks:
       - appnet
