@@ -80,7 +80,7 @@ services:
     image: fishnet/online
     working_dir: /var/www
     volumes:
-      - online:/var/www
+      - online:/var/www/forum
       - ./config/online/php.ini:/usr/local/etc/php/conf.d/settings.ini
     env_file:
       - ./.env
@@ -140,7 +140,7 @@ services:
       - glitch:/config/www/glitch
       - files:/config/www/static
       - memes:/config/www/memes
-      - online:/config/www/online
+      - online:/config/www/online/forum
       - wiki:/config/www/wiki
     networks:
       - appnet
