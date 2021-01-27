@@ -18,6 +18,12 @@ apt-get update
 apt-get install libseccomp2
 ```
 
+2. We use `docker-compose` in our deployment.
+
+```
+apt-get install docker-compose
+```
+
 ### Get The Sauce
 
 As follows: 
