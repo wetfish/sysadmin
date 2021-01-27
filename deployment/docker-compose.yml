@@ -62,7 +62,7 @@ services:
       - appnet
     environment:
       DB_DATABASE: danger
-      SITE_URL: bro.majorleague.website
+      SITE_URL: $DANGER_URL 
     depends_on:
       - db
 
@@ -93,7 +93,7 @@ services:
       MAINTENANCE_MESSAGE: $MAINTENANCE_MESSAGE
       SITE_NAME: $FORUM_NAME
       SITE_LANGUAGE: $FORUM_LANGUAGE 
-      SITE_URL: https://one.majorleague.website
+      SITE_URL: $FORUM_URL 
       OUTGOING_EMAIL: noreply@wetfish.net
     depends_on:
       - db
@@ -103,7 +103,7 @@ services:
     working_dir: /var/www
     environment:
       DB_DATABASE: wiki
-      SITE_URL: story.majorleague.website # DO NOT LET ME COMMIT THIS TO THE FINAL PR
+      SITE_URL: $WIKI_URL 
     volumes:
       - wiki:/var/www
       - ./config/wiki/config.php:/var/www/src/config.php
