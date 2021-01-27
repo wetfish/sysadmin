@@ -4,6 +4,20 @@
 
 > So easy, a halfwit could do it
 
+## Install Docker
+
+Some useful resources for getting docker installed on your machine
+
+https://docs.docker.com/engine/install/debian/
+
+1. On the current deployment, we had to add a repository for libsseccomp2 as well, prior to the `apt-get install docker-ce` step in the above link.
+
+```
+add-apt-repository "deb http://ftp.de.debian.org/debian sid main"
+apt-get update
+apt-get install libseccomp2
+```
+
 ### Get The Sauce
 
 As follows: 
