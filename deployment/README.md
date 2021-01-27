@@ -6,6 +6,8 @@
 
 ## Install Docker
 
+Our docker version (`docker -v`) is *version 20.10.2+dfsg1, build 2291f61*
+
 Some useful resources for getting docker installed on your machine
 
 https://docs.docker.com/engine/install/debian/
@@ -22,6 +24,12 @@ apt-get install libseccomp2
 
 ```
 apt-get install docker-compose
+```
+
+3. Finally, enable the service
+
+```
+systemctl start docker
 ```
 
 ### Get The Sauce
