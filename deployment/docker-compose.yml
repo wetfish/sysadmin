@@ -158,6 +158,8 @@ services:
   db:
     image: mariadb 
     command: --sql-mode=""
+    env_file:
+      - ./.env
     environment:
       MYSQL_ROOT_PASSWORD: $DB_PASSWORD
       MYSQL_USER: $DB_USERNAME
@@ -166,7 +168,7 @@ services:
     volumes:
       - ./config/schema.sql:/docker-entrypoint-initdb.d/schema.sql
       - ./dumps:/dumps
-      - dbdata:/var/lib/mysql
+      - ./data/dbdata:/var/lib/mysql
     networks:
       - appnet
 
