@@ -2,7 +2,7 @@
 
 > So easy, a halfwit could do it
 
-*** In the event you change anything on the production server, please update this git repository to match. Exceptions are `data/`, and `.env` ***
+__*In the event you change anything on the production server, please update this git repository to match. Exceptions are `data/`, and `.env`*__
 
 ## Install Docker
 
@@ -80,7 +80,7 @@ exit
 
 ### Maintenance
 
-***This living document will be updated periodically to reflect requisite maintenance***
+__*This living document will be updated periodically to reflect requisite maintenance*__
 
 #### Data
 
