@@ -179,8 +179,6 @@ networks:
     driver: bridge
 
 volumes:
-    dbdata:
-      driver: local
     click:
       driver: local
     danger:

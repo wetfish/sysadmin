@@ -75,6 +75,7 @@ mysql -u root -p
 
 # Exit your session on the database container
 exit
+
 ```
 
 ### Maintenance
