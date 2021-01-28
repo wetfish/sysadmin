@@ -26,6 +26,7 @@ services:
       - appnet
     volumes:
       - ./data/blog/config.js:/app/server/config.js
+      - ./data/blog/uploads/:/app/static/uploads/
 
   # Memes simply builds the css and js, then exits 
   memes:
