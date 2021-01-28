@@ -24,6 +24,8 @@ services:
     working_dir: /app
     networks:
       - appnet
+    volumes:
+      - ./data/blog/config.js:/app/server/config.js
 
   # Memes simply builds the css and js, then exits 
   memes:
