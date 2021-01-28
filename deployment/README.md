@@ -94,3 +94,10 @@ Additionally in data is the config.js file from the main blog. This is union mou
  
 The `dumps/` directory contains sql files for initialization of databases at the time of migration to the new servers, and is not considerably useful once we're up and running.
 
+#### Updating blog
+
+Changes done to blog will not update live, as node loads the config.js file on startup. To have the changes propagate, simply restart the service
+
+```
+docker-compose restart blog
+```
