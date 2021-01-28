@@ -111,6 +111,7 @@ services:
       - wiki:/var/www
       - ./config/wiki/config.php:/var/www/src/config.php
       - ./config/wiki/php.ini:/usr/local/etc/php/conf.d/settings.ini
+      - ./data/wiki/upload/:/config/www/wiki/upload/
     env_file:
       - ./.env
     networks:
@@ -138,6 +139,7 @@ services:
       - "443:443"
     volumes:
       - ./config/nginx:/config/nginx/site-confs
+      - ./data/wiki/upload/:/config/www/wiki/upload/
       - click:/config/www/click
       - danger:/config/www/danger
       - glitch:/config/www/glitch
