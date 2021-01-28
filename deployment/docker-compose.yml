@@ -21,7 +21,7 @@ services:
   # Node-only services. Ports listen on 2304 internally, and are remapped for nginx
   blog:
     image: fishnet/blog
-    working_dir: /var/www
+    working_dir: /app
     networks:
       - appnet
 

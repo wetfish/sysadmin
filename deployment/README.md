@@ -80,9 +80,15 @@ exit
 
 ***This living document will be updated periodically to reflect requisite maintenance***
 
+#### Data
+
 All data for the various sites that we want to persist, lives in `data/`. It's further broken out into dbdata, which is the database files themselves; and then per-site directories for data. For example,  `data/blog/upload` contains the photos used for the main wetfish website.
 
 This configuration allows us to simply zip the entire `data` directory for our backup scheme, and should be eventually automated.
+
+Additionally in data is the config.js file from the main blog. This is union mounted into the image so it may be updated and changes made will be immediately reflected in the production environment.
+
+#### Dumps
  
 The `dumps/` directory contains sql files for initialization of databases at the time of migration to the new servers, and is not considerably useful once we're up and running.
 
