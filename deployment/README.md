@@ -50,8 +50,8 @@ Our docker-compose.yml file is set up to create all the requisite networks, cont
 
 ```/bin/sh
 
-# Deploy our default swarm
-docker-compose up
+# Deploy everything
+docker-compose up 
 
 ```
 
@@ -62,6 +62,7 @@ docker-compose up
 ```/bin/sh
 
 # Log in to the database container
+# From the sysadmin/deployment directory: 
 docker-compose exec db bash
 
 # Then, from within the container start up a mysql cli as root, using the password you supplied in the .env file
