@@ -6,7 +6,7 @@ __*In the event you change anything on the production server, please update this
 
 ## Install Docker
 
-Our docker version (`docker -v`) is *version 20.10.2+dfsg1, build 2291f61*
+Our docker version (`docker -v`) is *`version 20.10.2+dfsg1, build 2291f61`*
 
 Some useful resources for getting docker installed on your machine
 
