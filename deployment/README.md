@@ -103,6 +103,8 @@ The wiki\_data.sql file was created as follows from the old production database:
 And the wiki\_schema.sql data was created with:
 `mysqldump -u -user -p wiki --no-data --skip-set-charset --default-character-set=latin1 | sed 's/CHARSET=latin1/CHARSET=utf8/g' > wiki\_schema.sql`
 
+*these steps are adapted from https://www.whitesmith.co/blog/latin1-to-utf8/ *
+
 #### Updating blog
 
 Changes done to blog will not update live, as node loads the config.js file on startup. To have the changes propagate, simply restart the service
