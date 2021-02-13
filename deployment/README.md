@@ -73,6 +73,9 @@ mysql -u root -p
 >FLUSH PRIVILEGES;
 >exit
 
+# Next, we want to pull the (unfortunately latin1 encoded) wiki data, and convert it to utf8
+mysql -u fishy -p wiki --default-charset=utf8 < /dumps/wiki_data.sql
+
 # Exit your session on the database container
 exit
 
@@ -93,6 +96,12 @@ Additionally in data is the config.js file from the main blog. This is union mou
 #### Dumps
  
 The `dumps/` directory contains sql files for initialization of databases at the time of migration to the new servers, and is not considerably useful once we're up and running.
+
+The wiki\_data.sql file was created as follows from the old production database:
+`mysqldump -u user -p --no-create-db --no-create-info --skip-set-charset --default-character-set=latin1 wiki > wiki_data.sql`
+
+And the wiki\_schema.sql data was created with:
+`mysqldump -u -user -p wiki --no-data --skip-set-charset --default-character-set=latin1 | sed 's/CHARSET=latin1/CHARSET=utf8/g' > wiki\_schema.sql`
 
 #### Updating blog
 
