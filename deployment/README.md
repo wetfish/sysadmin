@@ -101,7 +101,7 @@ The wiki\_data.sql file was created as follows from the old production database:
 `mysqldump -u user -p --no-create-db --no-create-info --skip-set-charset --default-character-set=latin1 wiki > wiki_data.sql`
 
 And the wiki\_schema.sql data was created with:
-`mysqldump -u -user -p wiki --no-data --skip-set-charset --default-character-set=latin1 | sed 's/CHARSET=latin1/CHARSET=utf8/g' > wiki\_schema.sql`
+`mysqldump -u -user -p wiki --no-data --skip-set-charset --default-character-set=latin1 | sed 's/CHARSET=latin1/CHARSET=utf8/g' > wiki_schema.sql`
 
 *these steps are adapted from https://www.whitesmith.co/blog/latin1-to-utf8/ *
 
