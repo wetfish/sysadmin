@@ -93,6 +93,25 @@ This configuration allows us to simply zip the entire `data` directory for our b
 
 Additionally in data is the config.js file from the main blog. This is union mounted into the image so it may be updated and changes made will be immediately reflected in the production environment.
 
+Our directory for data is as follows at the time of this writing:
+
+```sh
+data/
+    blog/
+        config.js
+        uploads/    # List of uploads used by config.js to build site
+            [...]
+    dbdata/
+        [...]       # Populated by mysql automatically
+    online/
+        fish/       # Avatar items, managed by admin panel
+        Themes/     # Theming elements, so we can easily add and modify themes
+    wiki/
+        upload/
+            thumb/  # thumbnails produced in gallery.php/notgallery.php
+            [...]   # Uploaded resources
+```
+
 #### Dumps
  
 The `dumps/` directory contains sql files for initialization of databases at the time of migration to the new servers, and is not considerably useful once we're up and running.

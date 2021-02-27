@@ -20,7 +20,7 @@ services:
 
   # Node-only services. Ports listen on 2304 internally, and are remapped for nginx
   blog:
-    image: fishnet/blog
+    image: fishnet/blog:latest
     working_dir: /app
     networks:
       - appnet
@@ -30,7 +30,7 @@ services:
 
   # Memes simply builds the css and js, then exits 
   memes:
-    image: fishnet/memes
+    image: fishnet/memes:latest
     command: 
       - "gulp" 
       - "fetch"
@@ -40,7 +40,7 @@ services:
 
   # These are our php services, they run and listen on port 9000 internally, remapped on the outside so nginx can invoke the correct one. Instead of a .env file, it uses the secrets system of docker
   click:
-    image: fishnet/click
+    image: fishnet/click:latest
     working_dir: /var/www
     volumes:
       - click:/var/www
@@ -55,7 +55,7 @@ services:
       - db
 
   danger:
-    image: fishnet/danger
+    image: fishnet/danger:latest
     working_dir: /var/www
     volumes:
       - danger:/var/www
@@ -70,7 +70,7 @@ services:
       - db
 
   glitch:
-    image: fishnet/glitch
+    image: fishnet/glitch:latest
     working_dir: /var/www
     volumes:
       - glitch:/var/www
@@ -80,11 +80,12 @@ services:
       - appnet
   
   online:
-    image: fishnet/online
+    image: fishnet/online:latest
     working_dir: /var/www
     volumes:
       - online:/var/www/forum
       - ./config/online/php.ini:/usr/local/etc/php/conf.d/settings.ini
+      - ./config/online/Settings.php:/var/www/forum/Settings.php
     env_file:
       - ./.env
     networks:
@@ -102,7 +103,7 @@ services:
       - db
     
   wiki:
-    image: fishnet/wiki
+    image: fishnet/wiki:latest
     working_dir: /var/www
     environment:
       DB_DATABASE: wiki
@@ -111,7 +112,6 @@ services:
       - wiki:/var/www
       - ./config/wiki/config.php:/var/www/src/config.php
       - ./config/wiki/php.ini:/usr/local/etc/php/conf.d/settings.ini
-      - ./data/wiki/upload/:/config/www/wiki/upload/
     env_file:
       - ./.env
     networks:
@@ -147,6 +147,9 @@ services:
       - memes:/config/www/memes
       - online:/config/www/online/forum
       - wiki:/config/www/wiki
+      - ./data/wiki/upload/:/config/www/wiki/upload/
+      - ./data/online/fish/:/config/www/online/fish/
+      - ./data/online/Themes/:/config/www/online/Themes/
     networks:
       - appnet
     depends_on:
@@ -172,6 +175,7 @@ services:
       MYSQL_DATABASE: root
     volumes:
       - ./config/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./config/mysql.ini:/etc/mysql/conf.d/mysql.ini
       - ./dumps:/dumps
       - ./data/dbdata:/var/lib/mysql
     networks:
