@@ -86,6 +86,7 @@ services:
       - online:/var/www/forum
       - ./config/online/php.ini:/usr/local/etc/php/conf.d/settings.ini
       - ./config/online/Settings.php:/var/www/forum/Settings.php
+      - ./data/online/cache/:/var/www/forum/cache/
     env_file:
       - ./.env
     networks:
@@ -112,6 +113,8 @@ services:
       - wiki:/var/www
       - ./config/wiki/config.php:/var/www/src/config.php
       - ./config/wiki/php.ini:/usr/local/etc/php/conf.d/settings.ini
+      - ./data/wiki/upload/:/var/www/upload/
+      - ./data/wiki/upload/:/config/www/wiki/upload/
     env_file:
       - ./.env
     networks:
@@ -139,7 +142,6 @@ services:
       - "443:443"
     volumes:
       - ./config/nginx:/config/nginx/site-confs
-      - ./data/wiki/upload/:/config/www/wiki/upload/
       - click:/config/www/click
       - danger:/config/www/danger
       - glitch:/config/www/glitch
@@ -148,8 +150,8 @@ services:
       - online:/config/www/online/forum
       - wiki:/config/www/wiki
       - ./data/wiki/upload/:/config/www/wiki/upload/
-      - ./data/online/fish/:/config/www/online/fish/
-      - ./data/online/Themes/:/config/www/online/Themes/
+      - ./data/online/fish/:/config/www/online/forum/fish/
+      - ./data/online/Themes/:/config/www/online/forum/Themes/
     networks:
       - appnet
     depends_on:
