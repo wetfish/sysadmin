@@ -1,6 +1,6 @@
 version: '3.6'
 services:
-  
+
   ## Overview
   ## We won't be using volumes for the `code`, they'll be included in the images that we run.
   ## No tty
@@ -9,7 +9,7 @@ services:
   ## entrypoint for php services will be a script that fetches the secrets and exports them to the ENV on startup
   ## Other resources will be fetched in config/fetch_sources.sh to be shared in the files volume
 
- 
+
   # Small image that fetches the git repositories we need into a shared volume, then exits
   files:
     image: alpine/git
@@ -28,11 +28,11 @@ services:
       - ./data/blog/config.js:/app/server/config.js
       - ./data/blog/uploads/:/app/static/uploads/
 
-  # Memes simply builds the css and js, then exits 
+  # Memes simply builds the css and js, then exits
   memes:
     image: fishnet/memes:latest
-    command: 
-      - "gulp" 
+    command:
+      - "gulp"
       - "fetch"
     volumes:
       - memes:/data
@@ -65,7 +65,7 @@ services:
       - appnet
     environment:
       DB_DATABASE: danger
-      SITE_URL: $DANGER_URL 
+      SITE_URL: $DANGER_URL
     depends_on:
       - db
 
@@ -78,7 +78,7 @@ services:
       - ./.env
     networks:
       - appnet
-  
+
   online:
     image: fishnet/online:latest
     working_dir: /var/www
@@ -97,18 +97,19 @@ services:
       MAINTENANCE_TITLE: $MAINTENANCE_TITLE
       MAINTENANCE_MESSAGE: $MAINTENANCE_MESSAGE
       SITE_NAME: $FORUM_NAME
-      SITE_LANGUAGE: $FORUM_LANGUAGE 
-      SITE_URL: $FORUM_URL 
+      SITE_LANGUAGE: $FORUM_LANGUAGE
+      SITE_URL: $FORUM_URL
       OUTGOING_EMAIL: noreply@wetfish.net
     depends_on:
       - db
-    
+
   wiki:
     image: fishnet/wiki:latest
     working_dir: /var/www
     environment:
       DB_DATABASE: wiki
-      SITE_URL: $WIKI_URL 
+      SITE_URL: $WIKI_URL
+      ALLOWED_EMBEDS: $WIKI_ALLOWED_EMBEDS
     volumes:
       - wiki:/var/www
       - ./config/wiki/config.php:/var/www/src/config.php
@@ -134,7 +135,7 @@ services:
       SUBDOMAINS: $SUBDOMAINS
       ONLY_SUBDOMAINS: $ONLY_SUBDOMAINS
       VALIDATION: http
-      EMAIL: $EMAIL 
+      EMAIL: $EMAIL
       STAGING: $STAGING
       EXTRA_DOMAINS: $EXTRA_DOMAINS
     ports:
@@ -166,7 +167,7 @@ services:
 
   # MySQL Service
   db:
-    image: mariadb 
+    image: mariadb
     command: --sql-mode=""
     env_file:
       - ./.env
@@ -202,4 +203,3 @@ volumes:
       driver: local
     wiki:
       driver: local
-
