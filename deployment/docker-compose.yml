@@ -138,6 +138,7 @@ services:
       EMAIL: $EMAIL
       STAGING: $STAGING
       EXTRA_DOMAINS: $EXTRA_DOMAINS
+      CERTPROVIDER: zerossl
     ports:
       - "80:80"
       - "443:443"
