@@ -1,0 +1,208 @@
+version: '3.6'
+services:
+
+  ## Overview
+  ## We won't be using volumes for the `code`, they'll be included in the images that we run.
+  ## No tty
+  ## Database will serve all services, and a setup.sql will be added to config/ for each service should it require one
+  ## We'll use secrets instead of the .env to assign variables
+  ## entrypoint for php services will be a script that fetches the secrets and exports them to the ENV on startup
+  ## Other resources will be fetched in config/fetch_sources.sh to be shared in the files volume
+
+
+  # Small image that fetches the git repositories we need into a shared volume, then exits
+  files:
+    image: alpine/git
+    entrypoint: /fetch_sources.sh
+    volumes:
+      - files:/git/sources
+      - ./config/fetch_sources.sh:/fetch_sources.sh
+
+  # Node-only services. Ports listen on 2304 internally, and are remapped for nginx
+  blog:
+    image: fishnet/blog:latest
+    working_dir: /app
+    networks:
+      - appnet
+    volumes:
+      - ./data/blog/config.js:/app/server/config.js
+      - ./data/blog/uploads/:/app/static/uploads/
+
+  # Memes simply builds the css and js, then exits
+  memes:
+    image: fishnet/memes:latest
+    command:
+      - "gulp"
+      - "fetch"
+    volumes:
+      - memes:/data
+
+
+  # These are our php services, they run and listen on port 9000 internally, remapped on the outside so nginx can invoke the correct one. Instead of a .env file, it uses the secrets system of docker
+  click:
+    image: fishnet/click:latest
+    working_dir: /var/www
+    volumes:
+      - click:/var/www
+      - ./config/click/php.ini:/usr/local/etc/php/conf.d/settings.ini
+    env_file:
+      - ./.env
+    environment:
+      DB_DATABASE: click
+    networks:
+      - appnet
+    depends_on:
+      - db
+
+  danger:
+    image: fishnet/danger:latest
+    working_dir: /var/www
+    volumes:
+      - danger:/var/www
+    env_file:
+      - ./.env
+    networks:
+      - appnet
+    environment:
+      DB_DATABASE: danger
+      SITE_URL: $DANGER_URL
+    depends_on:
+      - db
+
+  glitch:
+    image: fishnet/glitch:latest
+    working_dir: /var/www
+    volumes:
+      - glitch:/var/www
+    env_file:
+      - ./.env
+    networks:
+      - appnet
+
+  online:
+    image: fishnet/online:latest
+    working_dir: /var/www
+    volumes:
+      - online:/var/www/forum
+      - ./config/online/php.ini:/usr/local/etc/php/conf.d/settings.ini
+      - ./config/online/Settings.php:/var/www/forum/Settings.php
+      - ./data/online/cache/:/var/www/forum/cache/
+    env_file:
+      - ./.env
+    networks:
+      - appnet
+    environment:
+      DB_DATABASE: online
+      MAINTENANCE_MODE: $MAINTENANCE_MODE
+      MAINTENANCE_TITLE: $MAINTENANCE_TITLE
+      MAINTENANCE_MESSAGE: $MAINTENANCE_MESSAGE
+      SITE_NAME: $FORUM_NAME
+      SITE_LANGUAGE: $FORUM_LANGUAGE
+      SITE_URL: $FORUM_URL
+      OUTGOING_EMAIL: noreply@wetfish.net
+    depends_on:
+      - db
+
+  wiki:
+    image: fishnet/wiki:latest
+    working_dir: /var/www
+    environment:
+      DB_DATABASE: wiki
+      SITE_URL: $WIKI_URL
+      ALLOWED_EMBEDS: $WIKI_ALLOWED_EMBEDS
+    volumes:
+      - wiki:/var/www
+      - ./config/wiki/config.php:/var/www/src/config.php
+      - ./config/wiki/php.ini:/usr/local/etc/php/conf.d/settings.ini
+      - ./data/wiki/upload/:/var/www/upload/
+      - ./data/wiki/upload/:/config/www/wiki/upload/
+    env_file:
+      - ./.env
+    networks:
+      - appnet
+    depends_on:
+      - db
+
+  webserver:
+    image: ghcr.io/linuxserver/swag
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: $TIMEZONE
+      URL: $MAIN_URL
+      SUBDOMAINS: $SUBDOMAINS
+      ONLY_SUBDOMAINS: $ONLY_SUBDOMAINS
+      VALIDATION: http
+      EMAIL: $EMAIL
+      STAGING: $STAGING
+      EXTRA_DOMAINS: $EXTRA_DOMAINS
+      CERTPROVIDER: zerossl
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx:/config/nginx/site-confs
+      - click:/config/www/click
+      - danger:/config/www/danger
+      - glitch:/config/www/glitch
+      - files:/config/www/static
+      - memes:/config/www/memes
+      - online:/config/www/online/forum
+      - wiki:/config/www/wiki
+      - ./data/wiki/upload/:/config/www/wiki/upload/
+      - ./data/online/fish/:/config/www/online/forum/fish/
+      - ./data/online/Themes/:/config/www/online/forum/Themes/
+    networks:
+      - appnet
+    depends_on:
+      - files
+      - blog
+      - click
+      - danger
+      - glitch
+      - memes
+      - online
+      - wiki
+
+  # MySQL Service
+  db:
+    image: mariadb
+    command: --sql-mode=""
+    env_file:
+      - ./.env
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+      MYSQL_USER: $DB_USERNAME
+      MYSQL_PASSWORD: $DB_PASSWORD
+      MYSQL_DATABASE: root
+    volumes:
+      - ./config/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./config/mysql.ini:/etc/mysql/conf.d/mysql.ini
+      - ./dumps:/dumps
+      - ./data/dbdata:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3306:3306"
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+    click:
+      driver: local
+    danger:
+      driver: local
+    glitch:
+      driver: local
+    files:
+      driver: local
+    memes:
+      driver: local
+    online:
+      driver: local
+    wiki:
+      driver: local

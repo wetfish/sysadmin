@@ -2,3 +2,6 @@
 config.php
 config.js
 config.sh
+data/
+.env
+.gitignore

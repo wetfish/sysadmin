@@ -1,0 +1,13 @@
+[client]
+default-character-set=UTF-8
+   
+[mysql]
+default-character-set=UTF-8
+    
+[mysqld]
+character-set-client-handshake = false #force encoding to uft8
+character-set-server=UTF-8
+collation-server=UTF-8_general_ci
+    
+[mysqld_safe]
+default-character-set=UTF-8
