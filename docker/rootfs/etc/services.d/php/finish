@@ -1,0 +1,4 @@
+#!/usr/bin/execlineb -S0
+
+# An error can occur here when shutdown is done normally, that is benign. This only exists to shut down if a service fails during normal runtime
+s6-svscanctl -t /var/run/s6/services

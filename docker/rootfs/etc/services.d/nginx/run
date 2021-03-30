@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv sh
+
+echo "[services.d] nginx: listening on port" $HTTP_PORT
+/usr/sbin/nginx -g "daemon off;"

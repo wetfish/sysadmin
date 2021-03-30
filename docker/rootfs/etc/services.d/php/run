@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv sh
+
+echo "[services.d] php-fpm: starting"
+/usr/local/sbin/php-fpm --nodaemonize -R
