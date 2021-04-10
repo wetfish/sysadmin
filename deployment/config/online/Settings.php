@@ -13,23 +13,23 @@
 
 ########## Maintenance ##########
 # Note: If $maintenance is set to 2, the forum will be unusable!  Change it to 0 to fix it.
-$maintenance = getenv('MAINTENANCE_MODE');;		# Set to 1 to enable Maintenance Mode, 2 to make the forum untouchable. (you'll have to make it 0 again manually!)
+$maintenance = 0;		# Set to 1 to enable Maintenance Mode, 2 to make the forum untouchable. (you'll have to make it 0 again manually!)
 $mtitle = getenv('MAINTENANCE_TITLE');		# Title for the Maintenance Mode message.
 $mmessage = getenv('MAINTENANCE_MESSAGE');		# Description of why the forum is in maintenance mode.
 
 ########## Forum Info ##########
 $mbname = getenv('SITE_NAME');		# The name of your forum.
-$language = '';		# The default language file set for the forum.
-$boardurl = 'https://new.wetfishonline.com/forum';		# URL to your forum's folder. (without the trailing /!)
+$language = 'english';		# The default language file set for the forum.
+$boardurl = 'https://two.majorleague.website/forum';		# URL to your forum's folder. (without the trailing /!)
 $webmaster_email = getenv('OUTGOING_EMAIL');	# Email address to send emails from. (like noreply@yourdomain.com.)
 $cookiename = 'SMFCookie11';		# Name of the cookie to set for authentication.
 
 ########## Database Info ##########
 $db_type = 'mysql';
-$db_server = getenv('DB_HOSTNAME');
+$db_server = 'db';
 $db_name = 'online';
-$db_user = getenv('DB_USERNAME');
-$db_passwd = getenv('DB_PASSWORD');
+$db_user = 'fishy';
+$db_passwd = 'fishy';
 $ssi_db_user = '';
 $ssi_db_passwd = '';
 $db_prefix = 'smf_';
